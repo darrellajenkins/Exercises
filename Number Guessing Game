@@ -1,0 +1,68 @@
+import random
+import time
+from termcolor import colored
+from art import logo
+print(colored(logo,'yellow'))
+
+
+print("\t\t\t\tWelcome to the Game where you must attempt to read the Sorcerer's Mind!")
+level = input("\n\nFirst choose a difficulty: type 'easy' or 'impossible': ").lower()
+print("\n\n\n\nHe is thinking of a number between 1 and 100.  What is it?")
+
+
+def easy():
+    mind:int = random.randint(1,100)
+    #print(mind) This tests to ensure you read his mind correctly.
+    guesses = 8
+    guessing = True
+    while guessing:
+        print(f"\nYou have {guesses} attempts to guess the number.\n")
+        guess:int = int(input("I suggest you read his mind.  What is the number?: "))
+        if guess != mind and guess < mind:
+            guesses -= 1
+            print("Incorrect.  You should have guessed higher.")            
+        elif guess != mind and guess > mind:
+            guesses -= 1
+            print("Incorrect.  You should have guessed lower.")
+        if guesses == 0:
+            guessing = False
+            w = "\nYou've run out of guesses.  You are no mind reader."
+            p = f"\nIf you must know...the number was {mind}"
+            print(colored(w, 'green'))
+            time.sleep(3)
+            print(colored(p, 'green'))
+        if guess == mind:
+            x = f"\nWell done my apprentice! The answer was in fact {mind}."
+            print(colored(x, 'magenta'))
+            guessing = False
+    
+def impossible():
+    mind:int = random.randint(1,100)
+    #print(mind) This tests to ensure you read his mind correctly.
+    guesses = 3
+    guessing = True
+    while guessing:
+        print(f"\nYou have {guesses} attempts to guess the number.\n")
+        guess:int = int(input("I suggest you read his mind.  What is the number?: "))
+        if guess != mind and guess < mind:
+            guesses -= 1
+            print("Incorrect.  You should have guessed higher.")            
+        elif guess != mind and guess > mind:
+            guesses -= 1
+            print("Incorrect.  You should have guessed lower.")
+        if guesses == 0:
+            guessing = False
+            h = "\nYou've run out of guesses.  You are no mind reader."
+            i = f"\nIf you must know...the number was {mind}"
+            print(colored(h, 'green'))
+            time.sleep(3)
+            print(colored(i, 'green'))
+        if guess == mind:
+            m = f"\nWell done my apprentice! The answer was in fact {mind}."
+            print(colored(m, 'magenta'))
+            guessing = False
+            
+if level == "easy":
+    easy()
+elif level == "impossible":
+    impossible()
