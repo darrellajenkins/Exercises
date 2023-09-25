@@ -17,7 +17,10 @@ def playover():
         beginning()
     elif new_game3 == "n":
         print("\nHave a nice day and thank you for playing! Come back and play again soon! 😃")
-        
+    elif new_game3 != "y" or new_game3 != "n":
+        print("You did not enter 'y or n', please try again: ")
+        playover()
+
 def game_part1():
     time.sleep(1)
     global cards, ply_cards, dlr_cards
@@ -71,7 +74,6 @@ def game_part1():
         game_part2()
 
 def game_part2():
-    global cards, ply_cards, dlr_cards
     dontstopgame = True
     while dontstopgame:
         keep_drawing = input("Would you like another card, 'y or n'?: ").lower()
@@ -80,14 +82,17 @@ def game_part2():
                 ply_cards.append(random.choice(cards))
                 print("Your cards are:", *ply_cards, sep = ' | ')
                 print(f"And your score is: {sum(ply_cards)}\n")
-                endgame()
+                if sum(ply_cards) < 21:
+                    game_part2()
+                else:
+                    endgame()
             if keep_drawing == "n":
                 print("Your cards are:", *ply_cards, sep = ' | ')
                 print(f"And your score is: {sum(ply_cards)}\n")
                 dontstopgame = False
                 endgame()
-        else:
-            dontstopgame = False
+            else:
+                dontstopgame = False
 
 def endgame():
     global cards, ply_cards, dlr_cards
