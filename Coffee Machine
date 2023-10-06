@@ -1,0 +1,170 @@
+MENU = {
+    "espresso": {
+        "ingredients": {
+            "water": 50,
+            "coffee": 18,
+        },
+        "cost": 1.50,
+    },
+    "latte": {
+        "ingredients": {
+            "water": 200,
+            "milk": 150,
+            "coffee": 24,
+        },
+        "cost": 2.50,
+    },
+    "cappuccino": {
+        "ingredients": {
+            "water": 250,
+            "milk": 100,
+            "coffee": 24,
+        },
+        "cost": 3.00,
+    }
+}
+
+resources = {
+    "water": 300,
+    "milk": 200,
+    "coffee": 100,
+}
+
+
+def compare_sppl_es_order():
+    if MENU['espresso']['ingredients']['water'] > water:
+        ordering = False
+        return print(f"Sorry, there is not enough {rsrclist[0]}")
+    if MENU['espresso']['ingredients']['coffee'] > coffee:
+        ordering = False
+        return print(f"Sorry, there is not enough {rsrclist[2]}")
+    else:
+        verify_enough_for_expresso()
+
+
+def compare_sppl_la_order():
+    if MENU['latte']['ingredients']['water'] > water:
+        ordering = False
+        return print(f"Sorry, there is not enough {rsrclist[0]}")
+    if MENU['latte']['ingredients']['milk'] > milk:
+        ordering = False
+        return print(f"Sorry, there is not enough {rsrclist[1]}")
+    if MENU['latte']['ingredients']['coffee'] > coffee:
+        ordering = False
+        return print(f"Sorry, there is not enough {rsrclist[2]}")
+    else:
+        verify_enough_for_latte()
+
+
+def compare_sppl_ca_order():
+    if MENU['cappuccino']['ingredients']['water'] > water:
+        ordering = False
+        return print(f"Sorry, there is not enough {rsrclist[0]}")
+    if MENU['cappuccino']['ingredients']['milk'] > milk:
+        ordering = False
+        return print(f"Sorry, there is not enough {rsrclist[1]}")
+    if MENU['cappuccino']['ingredients']['coffee'] > coffee:
+        ordering = False
+        return print(f"Sorry, there is not enough {rsrclist[2]}")
+    else:
+        verify_enough_for_cappuccino()
+
+
+def verify_enough_for_expresso():
+    global money, water, milk, coffee
+    q = int(input("Please insert coins.\nHow many quarters?: "))
+    q1 = q * .25
+    d = int(input("How many dimes?: "))
+    d1 = d * .10
+    n = int(input("How many nickels?: "))
+    n1 = n * .05
+    p = int(input("How many pennies?: "))
+    p1 = p * .01
+    totamt_in_coins = float(q1 + d1 + n1 + p1)
+    change = float(totamt_in_coins - MENU['espresso']['cost'])
+    if MENU['espresso']['cost'] > totamt_in_coins:
+        print("Sorry, that's not enough money. Money refunded.")
+    else:
+        print(f"Here is your ${('%.2f' % change)} in change.\n Please enjoy your espresso! ☕")
+        money += float(totamt_in_coins - change)
+        water -= MENU['espresso']['ingredients']['water']
+        coffee -= MENU['espresso']['ingredients']['coffee']
+
+
+def verify_enough_for_latte():
+    global money, water, milk, coffee
+    q = int(input("Please insert coins.\nHow many quarters?: "))
+    q1 = q * .25
+    d = int(input("How many dimes?: "))
+    d1 = d * .10
+    n = int(input("How many nickels?: "))
+    n1 = n * .05
+    p = int(input("How many pennies?: "))
+    p1 = p * .01
+    totamt_in_coins = float(q1 + d1 + n1 + p1)
+    change = float(totamt_in_coins - MENU['latte']['cost'])
+    if MENU['latte']['cost'] > totamt_in_coins:
+        print("Sorry, that's not enough money. Money refunded.")
+    else:
+        print(f"Here is your ${('%.2f' % change)} in change.\n Please enjoy your latte! ☕")
+        money += float(totamt_in_coins - change)
+        water -= MENU['latte']['ingredients']['water']
+        milk -= MENU['latte']['ingredients']['milk']
+        coffee -= MENU['latte']['ingredients']['coffee']
+
+
+def verify_enough_for_cappuccino():
+    global money, water, milk, coffee
+    q = int(input("Please insert coins.\nHow many quarters?: "))
+    q1 = q * .25
+    d = int(input("How many dimes?: "))
+    d1 = d * .10
+    n = int(input("How many nickels?: "))
+    n1 = n * .05
+    p = int(input("How many pennies?: "))
+    p1 = p * .01
+    totamt_in_coins = float(q1 + d1 + n1 + p1)
+    change = float(totamt_in_coins - MENU['cappuccino']['cost'])
+    if MENU['cappuccino']['cost'] > totamt_in_coins:
+        print("Sorry, that's not enough money. Money refunded.")
+    else:
+        print(f"Here is your ${('%.2f' % change)} in change.\n Please enjoy your cappuccino! ☕")
+        money += float(totamt_in_coins - change)
+        water -= MENU['cappuccino']['ingredients']['water']
+        milk -= MENU['cappuccino']['ingredients']['milk']
+        coffee -= MENU['cappuccino']['ingredients']['coffee']
+
+
+money = float(0)
+water = resources["water"]
+milk = resources["milk"]
+coffee = resources["coffee"]
+ordering = True
+while ordering:
+    print('\033[31m' + "\n\t\tLet's brew some coffee!!!\n")
+    print('\033[33m' + "\t  What would you like to order?")
+    print('\033[38m')
+    es = MENU['espresso']['cost']
+    la = MENU['latte']['cost']
+    ca = MENU['cappuccino']['cost']
+    print(f"Espresso ${('%.2f' % es)} | Latte ${('%.2f' % la)} | Cappuccino ${('%.2f' % ca)}")
+    print("\n")
+    print("[Mgr only:  Press 'r' for report, or 'off' to end]")
+    rsrclist = list(resources)
+    choose = input("Press 'e', 'l', 'c': ")
+    if choose == "e":
+        compare_sppl_es_order()
+    elif choose == "l":
+        compare_sppl_la_order()
+    elif choose == "c":
+        compare_sppl_ca_order()
+    elif choose == "r":
+        print(f"{rsrclist[0].title()}: {water}ml")
+        print(f"{rsrclist[1].title()}: {milk}ml")
+        print(f"{rsrclist[2].title()}: {coffee}g")
+        print(f"Money: ${('%.2f' % money)}")
+    elif choose == "off":
+        ordering = False
+        print("Goodbye until next time!")
+    else:
+        ordering = False
