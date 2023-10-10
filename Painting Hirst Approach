@@ -1,0 +1,63 @@
+#  This is my code for a digital painting in the manner of Hirst, with the use of the Turtle module.
+
+
+import turtle
+
+
+import random
+
+
+palette = [(248, 247, 243), (237, 246, 242), (229, 236, 242), (246, 238, 242), (197, 166, 114),
+          (64, 102, 124), (147, 166, 182), (14, 41, 59), (223, 205, 125), (142, 85, 57),
+          (130, 77, 93), (183, 152, 165), (147, 174, 156), (71, 108, 89), (174, 148, 57),
+          (17, 47, 38), (177, 99, 116)]
+window = turtle.Screen()
+window.setup(width=1.0, height=1.0, startx=None, starty=None)
+tess = turtle.Turtle()
+tess.shape("circle")
+tess.speed(0)
+tess.pensize(20)
+turtle.colormode(255)
+
+
+def colors():
+    """Extracts colors from palette"""
+    newcolor = random.choice(palette)
+    return newcolor
+
+
+def stamp():
+    """Stamps one row of 10 circles"""
+    for _ in range(10):
+        tess.color(colors())
+        tess.pendown()
+        tess.stamp()
+        tess.penup()
+        tess.forward(50)
+
+
+def restart():
+    """Puts turtle back at starting point but one row higher"""
+    tess.backward(500)  
+    tess.left(90)
+    tess.forward(50)
+    tess.right(90)
+
+
+def starting_position():
+    """Places turtle at best starting position for a large painting"""
+    tess.penup()
+    tess.backward(200)
+    tess.right(90)
+    tess.forward(150)
+    tess.left(90)
+
+
+starting_position()
+for _ in range(10):
+    stamp()
+    restart()
+
+tess.penup()
+tess.hideturtle()
+window.exitonclick()
