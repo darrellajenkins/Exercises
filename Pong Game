@@ -1,0 +1,159 @@
+# main.py
+import turtle
+
+from paddle import Paddle
+
+from ball import Ball
+
+from score import Scoreboard
+
+import time
+
+win = turtle.Screen()
+win.setup(800, 600)
+win.bgcolor("black")
+win.title("                                                                                                             Let's Play PONG!")
+endgame = win.numinput(title = "Who will win?", prompt = "The first player to reach 'what score' will win?  Enter a number: ")
+# endgame is a variable that is a number (hence win.numinput instead of win.textinput)
+rightpaddle = Paddle((360, 0))
+leftpaddle = Paddle((-370, 0))
+ball = Ball()
+scoreboard = Scoreboard()
+
+# win.tracer(0) // # win.update() # this turns off the animation and then on -- I used hide and show turtle instead
+
+win.listen()
+win.onkeypress(rightpaddle.up, "Up")  # onkey will only allow single response but onkeypress makes keys repeat!
+win.onkeypress(rightpaddle.down, "Down")
+win.onkeypress(leftpaddle.up, "q")
+win.onkeypress(leftpaddle.down, "a")
+gameon = True
+while gameon:
+    time.sleep(0.03)
+    ball.move()
+
+    # Detect collision with the ceiling or floor
+    if ball.ycor() > 280 or ball.ycor() < -270:
+        ball.bouncey()
+
+    # Detect collision with the paddles
+    if ball.distance(rightpaddle) < 50 and ball.xcor() > 335 or ball.distance(leftpaddle) < 50 and ball.xcor() < -345:
+        ball.bouncex()
+
+    # Detect when ball is out of bounds right side
+    if ball.xcor() > 380:
+        ball.reset()
+        scoreboard.leftpoint()
+
+    # Detect when ball is out of bounds left side
+    if ball.xcor() < -380:
+        ball.reset()
+        scoreboard.rightpoint()
+
+    if scoreboard.lscore >= endgame:  # based on user prompt at start
+        scoreboard.goto(0, 0)
+        scoreboard.color("lime green")
+        scoreboard.write(arg="LEFT WINS!", align="center", font=('Bauhaus 93', 24, 'normal'))
+        ball.hideturtle()
+        gameon = False
+
+    elif scoreboard.rscore >= endgame:
+        scoreboard.goto(0, 0)
+        scoreboard.color("lime green")
+        scoreboard.write(arg="RIGHT WINS!", align="center", font=('Bauhaus 93', 24, 'normal'))
+        ball.hideturtle()
+        gameon = False
+
+win.exitonclick()
+
+# score.py
+
+import turtle
+
+
+class Scoreboard(turtle.Turtle):
+
+    def __init__(self):
+        super().__init__()
+        self.speed(0)
+        self.penup()
+        self.color("yellow")
+        self.hideturtle()
+        self.lscore = 0
+        self.rscore = 0
+        self.update_scoreboard()
+
+    def update_scoreboard(self):
+        self.clear()
+        self.goto(-100, 210)
+        self.write(self.lscore, align="center", font=('Bauhaus 93', 60, 'normal'))
+        self.goto(100, 210)
+        self.write(self.rscore, align="center", font=('Bauhaus 93', 60, 'normal'))
+
+    def leftpoint(self):
+        self.lscore += 1
+        self.update_scoreboard()
+
+    def rightpoint(self):
+        self.rscore += 1
+        self.update_scoreboard()
+
+# ball.py
+
+import turtle
+
+
+class Ball(turtle.Turtle):
+
+    def __init__(self):
+        super().__init__()
+        self.hideturtle()
+        self.shape("circle")
+        self.color("white")
+        self.penup()
+        self.showturtle()
+        self.xmove = 10
+        self.ymove = 10
+
+    def move(self):
+        newx = self.xcor() + self.xmove
+        newy = self.ycor() + self.ymove
+        self.goto(newx, newy)
+
+    def bouncey(self):
+        self.ymove *= -1
+
+    def bouncex(self):
+        self.xmove *= -1
+
+    def reset(self):
+        self.hideturtle()
+        self.home()
+        self.showturtle()
+        self.bouncex()
+
+# paddle.py
+
+import turtle
+
+
+class Paddle(turtle.Turtle):
+
+    def __init__(self, position):
+        super().__init__()
+        self.hideturtle()
+        self.shape("square")
+        self.color("white")
+        self.shapesize(stretch_wid=5, stretch_len=1,)
+        self.penup()
+        self.goto(position)
+        self.showturtle()
+
+    def up(self):
+        newy = self.ycor() + 20
+        self.goto(self.xcor(), newy)
+
+    def down(self):
+        newy = self.ycor() - 20
+        self.goto(self.xcor(), newy)
+
