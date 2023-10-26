@@ -40,13 +40,15 @@ while gameon:
     snake.move()
 
     #  Detects a collision with food
-    if snake.head.distance(food) < 15:
+    if snake.head.distance(food) < 25:
         food.refresh()
         snake.extend()
         scoreboard.keep_score()
 
     #  Detects a collision with a wall
     if snake.head.xcor() > 280 or snake.head.xcor() < -280 or snake.head.ycor() > 280 or snake.head.ycor() < -280:
+        scoreboard.reset()
+        snake.reset()
         gameon = False
         scoreboard.gameover()
 
@@ -55,14 +57,10 @@ while gameon:
         if segment == snake.head:
             pass
         elif snake.head.distance(segment) < 10:
+            scoreboard.reset()
+            snake.reset()
             gameon = False
             scoreboard.gameover()
-
-    #  ALTERNATIVE CODE FOR detecting a collision with tail:
-    # for segment in snake.segments[1:]:
-    #     if snake.head.distance(segment) < 10:
-    #         gameon = False
-    #         scoreboard.gameover()
 
 win.exitonclick()
 
@@ -76,6 +74,8 @@ class Scoreboard(turtle.Turtle):
     def __init__(self):
         super().__init__()
         self.score = 0
+        with open("data.txt") as data:
+            self.highscore = int(data.read())
         self.speed(0)
         self.penup()
         self.goto(0, 270)
@@ -84,16 +84,23 @@ class Scoreboard(turtle.Turtle):
         self.update_scoreboard()
 
     def update_scoreboard(self):
-        self.write(arg=f"Score:  {self.score}", align="center", font=('Bauhaus 93', 18, 'normal'))
+        self.clear()
+        self.write(arg=f"Score:  {self.score}  High Score:  {self.highscore}", align="center", font=('Bauhaus 93', 18, 'normal'))
 
     def gameover(self):
         self.goto(0, 0)
         self.color("red")
         self.write(arg="GAME OVER", align="center", font=('Bauhaus 93', 24, 'normal'))
 
+    def reset(self):
+        if self.score > self.highscore:
+            self.highscore = self.score
+            with open("data.txt", mode="w") as data:
+                data.write(f"{self.highscore}")
+        self.update_scoreboard()
+
     def keep_score(self):
         self.score += 1
-        self.clear()
         self.update_scoreboard()
 
 # food.py
@@ -152,6 +159,13 @@ class Snake:
         sly.goto(position)
         self.segments.append(sly)
 
+    def reset(self):
+        for seg in self.segments:
+            seg.goto(1000, 1000)
+        self.segments.clear()
+        self.create_snake()
+        self.head = self.segments[0]
+
     def extend(self):
         self.addseg(self.segments[-1].position())
 
@@ -177,5 +191,6 @@ class Snake:
     def right(self):
         if self.head.heading() != LEFT:
             self.head.setheading(RIGHT)
+            
 
 
