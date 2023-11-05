@@ -38,7 +38,7 @@ def convert():
         km = get_miles * 1.609344
         label_4.config(text=str(round(km, 2)), fg="red", font=("Arial", 20, "normal"))
 
-    else:
+    if not userbox_1.get().isdigit():
         warning()
 
 
