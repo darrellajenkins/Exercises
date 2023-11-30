@@ -1,0 +1,107 @@
+import datetime
+from datetime import timezone
+import time
+import requests
+import smtplib
+
+curr_utc_hour = datetime.datetime.now(timezone.utc).hour
+
+MY_LAT = 34.052235
+MY_LNG = -118.243683
+
+
+def iss_is_close():
+    response = requests.get(url="https://api.wheretheiss.at/v1/satellites/25544")
+    response.raise_for_status()
+    data = response.json()
+    latitude = float(data["latitude"])
+    longitude = float(data["longitude"])
+    if MY_LAT in range(int(latitude) - 6, int(latitude) + 6) and MY_LNG in range(int(longitude) - 6, int(longitude) + 6):
+        return True
+
+
+def military():
+    """Displays time data in military time format in conjuncion with the
+    style variable which requires user to make a choice."""
+    parameters = {
+            "lat": 34.052235,
+            "lng": -118.243683,
+            "formatted": 0  # TYPE 0 FOR MILITARY TIME ACCORDING TO THE API
+    }
+    response = requests.get(url="https://api.sunrise-sunset.org/json", params=parameters)
+    response.raise_for_status()
+    data = response.json()
+    return data
+
+def standard():
+    """Converts time data to standard display format with AM/PM in conjuncion
+    with the style variable which requires user to make a choice."""
+    parameters = {
+            "lat": 34.052235,
+            "lng": -118.243683,
+            "formatted": 1  # TYPE 1 FOR STANDARD TIME ACCORDING TO THE API
+    }
+    response = requests.get(url="https://api.sunrise-sunset.org/json", params=parameters)
+    response.raise_for_status()
+    data = response.json()
+    return data
+
+def std_after_sunset():
+    """Compares standard format time to military time from datetime module, but only
+    after the program has printed out the time in standard display format."""
+    parameters = {
+            "lat": 34.052235,
+            "lng": -118.243683,
+            "formatted": 0
+    }
+    response = requests.get(url="https://api.sunrise-sunset.org/json", params=parameters)
+    response.raise_for_status()
+    data_C = response.json()
+    mt_sunrise = data_C["results"]["sunrise"]
+    mt_sunset = data_C["results"]["sunset"]
+    TRise = mt_sunrise.find("T")
+    comp_mt_rise = int(mt_sunrise[TRise + 1:13])  
+    TSet = mt_sunset.find("T")
+    comp_mt_set = int(mt_sunset[TSet + 1:13])  
+    return comp_mt_rise, comp_mt_set
+
+
+def nighttime():
+    style = input("Military or Standard Time? Type 'm' or 's: ").lower()
+    if style == 'm':
+        data_M = military()
+        mt_sunrise = data_M["results"]["sunrise"]
+        mt_sunset = data_M["results"]["sunset"]
+        TRise = mt_sunrise.find("T")
+        new_mt_rise = mt_sunrise[TRise + 1:19]
+        TSet = mt_sunset.find("T")
+        new_mt_set = mt_sunset[TSet + 1:19]
+        print(f"\nLos Angeles, WA: (-8 hrs PST or -7 PDT)\n\n\tSunrise occurs at:   {new_mt_rise} UTC")
+        print(f"\tSunset occurs at:    {new_mt_set} UTC")
+        if curr_utc_hour >= int(mt_sunset[TSet + 1:13]) or curr_utc_hour <= int(mt_sunrise[TRise + 1:19]):
+            print("\n\tIt is currently after sunset.")
+            return True
+    elif style == 's':  
+        data_S = standard()
+        st_sunrise = data_S["results"]["sunrise"]
+        st_sunset = data_S["results"]["sunset"]
+        compare_only = std_after_sunset()  # Stores data grabbed as a tuple 15, 0 (rise / set)
+        print(f"\nLos Angeles, WA: (-8 hrs PST or -7 PDT)\n\n\tSunrise occurs at:   {st_sunrise} UTC")
+        print(f"\tSunset occurs at:    {st_sunset} UTC")
+        if curr_utc_hour >= int(compare_only[1]) or curr_utc_hour <= int(compare_only[0]):  # > sunset[1] or < sunrise[0]
+            print("\n\tIt is currently after sunset.")
+            return True
+
+nighttime()
+
+while True:
+    time.sleep(60)  
+    print("The ISS is overhead!")
+    if iss_is_close() and nighttime():
+        my_gmail = "..."
+        password3 = "***"
+        connection3 = smtplib.SMTP("smtp.gmail.com")
+        connection3.starttls() 
+        connection3.login(user=my_gmail, password=password3)
+        connection3.sendmail(from_addr=my_gmail, to_addrs="***@gmail.com",
+                             msg=f"Subject:ISS\n\nISS is overhead!")
