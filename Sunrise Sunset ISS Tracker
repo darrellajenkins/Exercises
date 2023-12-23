@@ -2,12 +2,8 @@ import datetime
 from datetime import timezone
 import time
 import requests
-import smtplib
 
-currenttime = datetime.datetime.now()  # This is local datetime.
-curr_hour = currenttime.hour  # This is local hour. We will not use it in this program.
 
-# We need the UTC hour to be able to compare with the data from the sunrise/sunset API which is in UTC format.
 curr_utc_hour = datetime.datetime.now(timezone.utc).hour
 
 MY_LAT = 48.128471
@@ -22,10 +18,6 @@ def iss_is_close():
     longitude = float(data["longitude"])
     if MY_LAT in range(int(latitude) - 6, int(latitude) + 6) and MY_LNG in range(int(longitude) - 6, int(longitude) + 6):
         return True
-        # alternative function for iss sat within range of your location:  if lat-5 <= iss_lat <= lat+5 and lng-5 <= iss_lng <= lng+5
-
-# iss_position = (latitude, longitude). Standard notation is always lat first then lon.
-# You can map it out on Google Maps in the address field but may need to adjust numbers for negative or positive depending on E/W.
 
 
 def military():
@@ -41,6 +33,7 @@ def military():
     data = response.json()
     return data
 
+
 def standard():
     """Converts time data to standard display format with AM/PM in conjuncion
     with the style variable which requires user to make a choice."""
@@ -53,6 +46,7 @@ def standard():
     response.raise_for_status()
     data = response.json()
     return data
+
 
 def std_after_sunset():
     """Compares standard format time to military time from datetime module, but only
@@ -68,9 +62,9 @@ def std_after_sunset():
     mt_sunrise = data_C["results"]["sunrise"]
     mt_sunset = data_C["results"]["sunset"]
     TRise = mt_sunrise.find("T")
-    comp_mt_rise = int(mt_sunrise[TRise + 1:13])  # Capturing only the hour digits
+    comp_mt_rise = int(mt_sunrise[TRise + 1:13])  
     TSet = mt_sunset.find("T")
-    comp_mt_set = int(mt_sunset[TSet + 1:13])  # Capturing only the hour digits
+    comp_mt_set = int(mt_sunset[TSet + 1:13]) 
     return comp_mt_rise, comp_mt_set
 
 
@@ -84,26 +78,22 @@ def nighttime():
         new_mt_rise = mt_sunrise[TRise + 1:19]
         TSet = mt_sunset.find("T")
         new_mt_set = mt_sunset[TSet + 1:19]
-        print(f"\nSeattle, WA: (-8 hrs PST or -7 PDT)\n\n\tSunrise occurs at:   {new_mt_rise} UTC")
+        print(f"\nLos Angeles, WA: (-8 hrs PST or -7 PDT)\n\n\tSunrise occurs at:   {new_mt_rise} UTC")
         print(f"\tSunset occurs at:    {new_mt_set} UTC")
-        if curr_utc_hour > int(mt_sunset[TSet + 1:13]) and curr_utc_hour < int(mt_sunrise[TRise + 1:13]):
-            print('\033[33m' + "\n\tIt is currently after sunset.")
+        if curr_utc_hour >= int(mt_sunset[TSet + 1:13]) or curr_utc_hour <= int(mt_sunrise[TRise + 1:19]):
+            print("\n\tIt is currently after sunset.")
             return True
-        else:
-            print('\033[36m' + "\n\tIt is daytime.")
-    elif style == 's':  # Prints std display format first, then compares in military time.  Determines if after sunset and thus dark.
+    elif style == 's':  
         data_S = standard()
         st_sunrise = data_S["results"]["sunrise"]
         st_sunset = data_S["results"]["sunset"]
-        # Next line allows comparing currenttime to military time, since the datetime module only provides the time in military time format.
-        compare_only = std_after_sunset()  # Stores data grabbed as a tuple 15, 0 (rise / set)
-        print(f"\nSeattle, WA: (-8 hrs PST or -7 PDT)\n\n\tSunrise occurs at:   {st_sunrise} UTC")
+        compare_only = std_after_sunset()  
+        print(f"\nLos Angeles, WA: (-8 hrs PST or -7 PDT)\n\n\tSunrise occurs at:   {st_sunrise} UTC")
         print(f"\tSunset occurs at:    {st_sunset} UTC")
-        if curr_utc_hour > int(compare_only[1]) and curr_utc_hour < int(compare_only[0]):  # > sunset[1] or < sunrise[0]
-            print('\033[33m' + "\n\tIt is currently after sunset.")
+        if curr_utc_hour >= int(compare_only[1]) or curr_utc_hour <= int(compare_only[0]):  # > sunset[1] or < sunrise[0]
+            print("\n\tIt is currently after sunset.")
             return True
-        else:
-            print('\033[36m' + "\n\tIt is daytime.")
+
 
 nighttime()
 
