@@ -1,4 +1,4 @@
-#Here is my solution to the FizzBuzz problem.  This was an important exercise for me to accomplish as I have never heard of this problem before.
+#Here is my solution to the FizzBuzz problem.  
 #I was able to complete in exactly 10 minutes.
 for number in range(1, 101):
   if number % 3 != 0 and number % 5 != 0:
