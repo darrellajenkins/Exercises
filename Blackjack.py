@@ -1,5 +1,6 @@
 import random
 import time
+import os
 
 
 # My blackjack solution October 2023.
@@ -87,26 +88,26 @@ def game_part1():
         game_part2()
 
 def game_part2():
-    dontstopgame = True
-    while dontstopgame:
+    go = True
+    while go:
         keep_drawing = input("Would you like another card, 'y or n'?: ").lower()
         for chk in keep_drawing:
             if keep_drawing == "y" and sum(ply_cards) < 21:
                 ply_cards.append(random.choice(cards))
                 remove_ace_ply()
-                print("Your cards are:", *ply_cards, sep = ' | ')
+                print("Your cards are:", *ply_cards, sep=' | ')
                 print(f"And your score is: {sum(ply_cards)}\n")
                 if sum(ply_cards) < 21:
                     game_part2()
                 else:
                     endgame()
             if keep_drawing == "n":
-                print("Your cards are:", *ply_cards, sep = ' | ')
+                print("Your cards are:", *ply_cards, sep=' | ')
                 print(f"And your score is: {sum(ply_cards)}\n")
-                dontstopgame = False
+                go = False
                 endgame()
             else:
-                dontstopgame = False
+                go = False
 
 def endgame():
     global cards, ply_cards, dlr_cards
@@ -159,7 +160,8 @@ def remove_ace_ply():
 def clear() -> None:
     """Clear the terminal."""
     print("\33[H\033[2J" , end="", flush=True)
-
+    os.system("cls")
+    
 def dlr_draws():
     global cards, ply_cards, dlr_cards
     while sum(dlr_cards) < 17:
@@ -173,3 +175,5 @@ def beginning():
     game_part1()
 
 beginning()
+
+
